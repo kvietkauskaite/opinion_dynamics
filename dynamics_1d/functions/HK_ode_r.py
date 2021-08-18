@@ -1,13 +1,17 @@
-def HK_discrete (R, n, x0, stop = 10**(-5), result = 'FULL', include_self = True, max_steps = 100):
+def HK_ode_r (R, n, x0, n_rad, x0_rad, h, stop = 10**(-5), result = 'FULL', include_self = True, max_steps = 1000):
 
     """
-    This function generates the opinion dynamics using a discrete HK model,
+    This function generates the opinion dynamics using an ODE version of HK model,
     where opinions are distributed within a range [0,1].
-    The function does not take radicals into account.
+    For that purpose, Euler's method is used.
+    The function takes radicals into account.
 
     @param R            - a bound (confidence level);
     @param n            - a number of agents;
     @param x0           - an initial distribution of opinions;
+    @param n_rad        - a number of radicals;
+    @param x0_rad       - a distribution of radicals;
+    @param h            - a step size;
     @param stop         - a stopping criterion;
     @param result       - a flag indicating if the whole 2D array is returned ('FULL')
                           or only the last step values (!= 'FULL');
@@ -17,12 +21,32 @@ def HK_discrete (R, n, x0, stop = 10**(-5), result = 'FULL', include_self = True
 
     import numpy as np
     import math
+    from functions.dxdt import dxdt
+
+    # combine the radicals and normal agents
+    n_all = n + n_rad
+    x0_all = np.concatenate((x0, x0_rad))
+    x0_all.sort()
+
+    # find radical ids
+    radicals_idx = []
+
+    for i in range(len(x0_rad)):
+
+        for j in range(len(x0_all)):
+
+            if j in radicals_idx:
+                continue
+
+            if x0_rad[i] == x0_all[j]:
+                radicals_idx.append(j)
+                break
 
     # the array of results (2D)
     res = []
-    res.append(x0)
+    res.append(x0_all)
 
-    x = np.copy(x0)
+    x = np.copy(x0_all)
     y = np.copy(x)
 
     # the flag indicating if the calculation should proceed
@@ -38,40 +62,18 @@ def HK_discrete (R, n, x0, stop = 10**(-5), result = 'FULL', include_self = True
 
     while calculate:
 
+        # -------------------------------------------------
+        # increase the step
         steps += 1
 
-        # -------------------------------------------------
-        # update one step
-        for i in range(n):
-            # reset the set I and sum of opinions
-            I = []
-            sum = 0
+        # update one step using Euler's method
+        y = x + h * dxdt(None, x, R, n_all, include_self, radicals_idx)
 
-            for j in range(n):
-
-                if not include_self:
-                    # do not include the agent i himself
-                    if i == j:
-                        continue
-
-                # check if agent j influences agent i
-                if abs(x[i] - x[j]) <= R:
-                    # add it to the set I
-                    I.append(j)
-                    # update the sum of opinions
-                    sum = sum + x[j]
-
-            # apply the stepping rule
-            if len(I) != 0:
-                y[i] = sum/len(I)
-            else:
-                y[i] = x[i]
-
-        # -------------------------------------------------
-
+        # check the stopping conditions
         if max(abs(x - y)) <= stop or steps > max_steps:
             # terminate the calculation
             calculate = False
+
         else:
             # update the opinions x only when all agents are considered
             x = np.copy(y)

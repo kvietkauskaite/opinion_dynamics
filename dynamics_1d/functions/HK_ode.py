@@ -1,13 +1,15 @@
-def HK_discrete (R, n, x0, stop = 10**(-5), result = 'FULL', include_self = True, max_steps = 100):
+def HK_ode (R, n, x0, h, stop = 10**(-5), result = 'FULL', include_self = True, max_steps = 1000):
 
     """
-    This function generates the opinion dynamics using a discrete HK model,
+    This function generates the opinion dynamics using an ODE version of HK model,
     where opinions are distributed within a range [0,1].
+    For that purpose, Euler's method is used.
     The function does not take radicals into account.
 
     @param R            - a bound (confidence level);
     @param n            - a number of agents;
     @param x0           - an initial distribution of opinions;
+    @param h            - a step size;
     @param stop         - a stopping criterion;
     @param result       - a flag indicating if the whole 2D array is returned ('FULL')
                           or only the last step values (!= 'FULL');
@@ -17,6 +19,7 @@ def HK_discrete (R, n, x0, stop = 10**(-5), result = 'FULL', include_self = True
 
     import numpy as np
     import math
+    from functions.dxdt import dxdt
 
     # the array of results (2D)
     res = []
@@ -38,42 +41,22 @@ def HK_discrete (R, n, x0, stop = 10**(-5), result = 'FULL', include_self = True
 
     while calculate:
 
+        # -------------------------------------------------
+        # increase the step
         steps += 1
 
-        # -------------------------------------------------
-        # update one step
-        for i in range(n):
-            # reset the set I and sum of opinions
-            I = []
-            sum = 0
+        # update one step using Euler's method
+        y = x + h * dxdt(None, x, R, n, include_self)
 
-            for j in range(n):
-
-                if not include_self:
-                    # do not include the agent i himself
-                    if i == j:
-                        continue
-
-                # check if agent j influences agent i
-                if abs(x[i] - x[j]) <= R:
-                    # add it to the set I
-                    I.append(j)
-                    # update the sum of opinions
-                    sum = sum + x[j]
-
-            # apply the stepping rule
-            if len(I) != 0:
-                y[i] = sum/len(I)
-            else:
-                y[i] = x[i]
-
-        # -------------------------------------------------
-
+        # check the stopping conditions
         if max(abs(x - y)) <= stop or steps > max_steps:
+
             # terminate the calculation
             calculate = False
+
         else:
-            # update the opinions x only when all agents are considered
+
+            # update the opinions x
             x = np.copy(y)
 
             # append the opinions to the major array
