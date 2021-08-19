@@ -146,7 +146,7 @@ for r in R:
                 final_var = np.mean(v[t-1][1:])
 
                 # print the final variance value for the cluster
-                plt.annotate(round(final_var, 3), xy = (t, values[0][t]), ha = 'center', fontsize = 15)
+                plt.annotate(round(final_var, 3), xy = (t, values[0][t]), ha = 'center', fontsize = 19)
 
         # add reference value
         plt.axvline(x = rc, c = 'orange', linestyle='--', lw = 4)
@@ -155,8 +155,12 @@ for r in R:
         peak = int(max(values[0])) / total_runs
 
         # add title and axis names
-        plt.title('Parameters: n = {}, R = {}. Peak bar ratio: {}.'.format(n, r, peak), fontsize = 25)
-        plt.xlabel('Number of clusters')
-        plt.ylabel('Frequency')
+        plt.title('N = {}, R = {}. Peak bar ratio: {}.'.format(n, r, peak), fontsize = 27)
+
+        if i in [7, 8, 9]:
+            plt.xlabel('Number of clusters', fontsize = 23)
+
+        if i in [1, 4, 7, 10]:
+            plt.ylabel('Frequency', fontsize = 23)
 
         i += 1
