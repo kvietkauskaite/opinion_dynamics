@@ -10,4 +10,5 @@ In each folder there are four subfolders:
 - ode_analysis: holds the scripts for simulating the opinion dynamics and performing the various type of analysis in the ODE case using Euler's scheme;
 - sde_analysis: holds the scripts for simulating the opinion dynamics and performing the various type of analysis in the SDE case using the Euler-Maruyama scheme.
 
-In the case of the SDE analysis in 1D, the script for analysis of the order parameter uses the multiprocessing package to divide the computational load through 7 processing units. For a more detailed description, see the write-ups inside the files (scripts or functions).
+In the case of the SDE analysis in 1D, the script for analysis of the order parameter uses the multiprocessing package to divide the computational load through 7 processing units.
+For a more detailed description, see the write-ups inside the files (scripts or functions).
