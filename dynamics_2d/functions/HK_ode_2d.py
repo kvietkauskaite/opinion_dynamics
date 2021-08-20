@@ -62,65 +62,6 @@ def HK_ode_2d (R, n, x0, h, stop = 10**(-5), result = 'FULL', max_steps = 100, d
             y[i][0] = x[i][0] + h * (-1/n) * sum_1
             y[i][1] = x[i][1] + h * (-1/n) * sum_2
 
-            # ------------------------------------------------------------------
-            # boundary conditions
-            # if bound_cond == 'reflect':
-            #
-            #     for i in range(len(y)):
-            #
-            #         # if the opinion is not in [0, 1], it is reflected on the boundary
-            #         # x axis
-            #         while y[i][0] < 0 or y[i][0] > 1:
-            #
-            #             if y[i][0] < 0:
-            #                 y[i][0] = - y[i][0]
-            #
-            #             elif y[i][0] > 1:
-            #                 y[i][0] = 1 - (y[i][0] - 1)
-            #
-            #         # y axis
-            #         while y[i][1] < 0 or y[i][1] > 1:
-            #
-            #             if y[i][1] < 0:
-            #                 y[i][1] = -y[i][1]
-            #
-            #             elif y[i][1] > 1:
-            #                 y[i][1] = 1 - (y[i][1] - 1)
-            # # ------------------------------------------------------------------
-            # elif bound_cond == 'adsorb':
-            #
-            #     for i in range(len(y)):
-            #
-            #         # if the opinion is not in [0, 1], it is adsorbed on the boundary
-            #         # x axis
-            #         if y[i][0] < 0:
-            #             y[i][0] = 0
-            #
-            #         elif y[i][0] > 1:
-            #             y[i][0] = 1
-            #
-            #         # y axis
-            #         if y[i][1] < 0:
-            #             y[i][1] = 0
-            #
-            #         elif y[i][1] > 1:
-            #             y[i][1] = 1
-            # # ------------------------------------------------------------------
-            # elif bound_cond == 'period':
-            #
-            #     for i in range(len(y)):
-            #
-            #         # if the opinion is not in [0, 1], it moves in the period
-            #         # x axis
-            #         if y[i][0] < 0 or y[i][0] > 1:
-            #
-            #             # the i'th opinion is its mod
-            #             # x axis
-            #             y[i][0] = y[i][0] % 1
-            #
-            #             # y axis
-            #             y[i][1] = y[i][1] % 1
-
         # -------------------------------------------------
         # check if the calculation should terminate
         if np.linalg.norm(x - y, ord = dist_norm) <= stop or steps > max_steps:
